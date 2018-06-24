@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 """Implementing the TDNN layer in keras.
+
+The code presented in this repo is an implementation of Peddinti1's paper
+"A time delay neural network architecture for efficient modeling of long temporal contexts"
+
 """
 
 """
@@ -32,8 +36,10 @@ import numpy as np
 
 class TDNNLayer(Layer):
 
-    def __init__(self, output_dim, **kwargs):
+    def __init__(self, output_dim, input_context=[-2,2], sub_sampling=False, **kwargs):
         self.output_dim = output_dim
+        self.input_context = input_context
+        self.sub_sampling = sub_sampling
         super(TDNNLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
