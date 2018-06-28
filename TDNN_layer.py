@@ -7,36 +7,27 @@ The code presented in this repo is an implementation of Peddinti1's paper
 
 """
 
-"""
-Copyright (c) 2018 Loïc Dalloz
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
 
 from keras import backend as K
-from keras.engine.topology import Layer
+from keras.engine.base_layer import Layer
 import numpy as np
 
 
 class TDNNLayer(Layer):
+    """TDNNLayer
 
-    def __init__(self, output_dim, input_context=[-2,2], sub_sampling=False, **kwargs):
+    TDNNLayer sounds like 1D conv with extra steps. Why not doing it with Keras ?
+
+    This layer inherits the Layer class from Keras and is inspired by conv1D layer.
+
+    The documentation will be added later.
+    """
+
+    def __init__(self,
+                 input_context=[-2, 2],
+                 sub_sampling=False,
+                 **kwargs):
+
         self.output_dim = output_dim
         self.input_context = input_context
         self.sub_sampling = sub_sampling
@@ -50,8 +41,13 @@ class TDNNLayer(Layer):
                                       trainable=True)
         super(TDNNLayer, self).build(input_shape)  # Be sure to call this at the end
 
-    def call(self, x):
-        return K.dot(x, self.kernel)
+    def call(self,
+             inputs,
+             mask=None,
+             training=None,
+             initial_state=None,
+             constants=None):
+        return K.dot(inputs, self.kernel)
 
     def compute_output_shape(self, input_shape):
-        return input_shape[0], self.output_dim
+        return input_shape[0], input_shape[1]-self.input_context[1]+self.input_context[0]
